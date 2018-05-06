@@ -2,6 +2,7 @@ module Constants (
     testURL,
     shoutCastURL,
     shoutCastBrowseGenre,
+    contentTypeBrowseByGenre,
     shoutCastTop
 ) where
     -- SuperRadioTupi
@@ -14,7 +15,11 @@ module Constants (
     shoutCastURL= "http://www.shoutcast.com"
 
     shoutCastBrowseGenre :: String
-    shoutCastBrowseGenre = "/Home/BrowseByGenre"
+    shoutCastBrowseGenre = "http://www.shoutcast.com/Home/BrowseByGenre"
+
+    contentTypeBrowseByGenre :: String
+    contentTypeBrowseByGenre = "multipart/form-data"
+    --"boundary=------------------------bb5b7e23edfc6098"
 
     shoutCastTop :: String
     shoutCastTop = "/Home/Top"
