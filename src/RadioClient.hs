@@ -35,6 +35,8 @@ module RadioClient (
     -- This will be replaced by cartesian product data type.
     type Genre = String
 
+    -- | \"ID\":1755473,\"Name\":\"NME 1 - The Classic Alternative Music Service\",\"Format\":\"audio/mpeg\",\"Bitrate\":128,\"Genre\":\"Alternative\",\"CurrentTrack\":\"Black Rebel Motorcycle Club - Weapon Of Choice\",\"Listeners\":83,\"IsRadionomy\":false,\"IceUrl\":\"\",\"StreamUrl\":null,\"AACEnabled\":0,\"IsPlaying\":false,\"IsAACEnabled\":false}
+    -- {\"ID\":381703,\"Name\":\"Radio Asheghaneh (GLWiZ) Persian Farsi Iranian\",\"Format\":\"audio/mpeg\",\"Bitrate\":128,\"Genre\":\"Alternative\",\"CurrentTrack\":\"Shahab Tiam - Ravanparish\",\"Listeners\":36,\"IsRadionomy\":false,\"IceUrl\":\"\",\"StreamUrl\":null,\"AACEnabled\":0,\"IsPlaying\":false,\"IsAACEnabled\":false}
     data StationInfo = StationInfo {
         id :: Int,
         name :: String,
@@ -45,7 +47,10 @@ module RadioClient (
         listeners :: Int,
         isRadioOnly :: Bool,
         iceURL :: String,
-        isPlaying :: Bool
+        streamURL :: Maybe String, -- sometimes null like example above
+        aACEnabled :: Int,
+        isPlaying :: Bool,
+        isAACEnabled :: Bool
     } deriving (Show, Generic)
 
     -- not case-sensitive
@@ -76,6 +81,8 @@ module RadioClient (
         
         putStrLn $ show request
         putStrLn $ show response
+
+    
 
     testFunc2 :: IO()
     testFunc2 = do
