@@ -2,6 +2,7 @@ module Constants (
     testURL,
     shoutCastURL,
     shoutCastBrowseGenre,
+    browseGenreTail,
     contentTypeBrowseByGenre,
     shoutCastTop
 ) where
@@ -16,6 +17,9 @@ module Constants (
 
     shoutCastBrowseGenre :: String
     shoutCastBrowseGenre = "http://www.shoutcast.com/Home/BrowseByGenre"
+
+    browseGenreTail :: String
+    browseGenreTail = "/Home/BrowseByGenre"
 
     contentTypeBrowseByGenre :: String
     contentTypeBrowseByGenre = "multipart/form-data"

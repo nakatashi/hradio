@@ -1,18 +1,26 @@
-{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric, DeriveAnyClass, OverloadedStrings #-}
 module RadioClient (
-    --getResult,
-    --postRequestByGenreSample
+    testFunc,
+    testFunc2,
+    testFunc3
     ) where
     
     import Control.Applicative
+    import Control.Monad.IO.Class (liftIO)
     import Data.Aeson
+    import qualified Data.ByteString as S
+    import qualified Data.ByteString.Lazy.Char8 as S8
+    import qualified Data.Conduit.List as CL
     import GHC.Generics
 
     import Network.HTTP.Client
     import Network.HTTP.Simple
+    import Network.HTTP.Types.URI
+    
+    import System.IO (stdout)
 
-    import Network.HTTP
-    import Network.Stream
+    --import Network.HTTP
+    --import Network.Stream
     --import qualified Network.HTTP.simpleHTTP as simpleHTTP
     import Text.ParserCombinators.Parsec
 
@@ -48,17 +56,51 @@ module RadioClient (
     requestListByGenre ::  Genre -> IO [StationInfo]
     requestListByGenre = undefined
 
-    {-postRequestByGenre :: Genre -> Request_String
-    postRequestByGenre g = postRequestWithBody shoutCastBrowseGenre contentTypeBrowseByGenre ("genrename="++ g)
+    myRequest :: Request -> Request
+    myRequest req = setRequestBodyLBS ("genrename=alternative")
+                $  setRequestHeader "Content-Type" ["multipart/form-data"]
+                $ req
 
-    postRequestByGenreSample :: Request_String
-    postRequestByGenreSample = postRequestByGenre sampleGenre
 
-    getResult :: IO String
-    getResult = do 
-        res <- Network.HTTP.simpleHTTP (postRequestByGenre sampleGenre)
-        case res of 
-            Left e -> return ("Error"++(show e))
-            Right r -> return (show r)--getResponseBody res
-            -}
+    testFunc :: IO()
+    testFunc = do
+        request' <- parseRequest ("POST http://shoutcast.com/Home/BrowseByGenre")
+        let request
+                = setRequestMethod "POST"
+                $ setRequestHeader "Accept" ["*/*"]
+                $ setRequestHeader "Expect" ["100-continue"]
+                $ setRequestHeader "Content-Type" ["multipart/form-data"]                
+                $ setRequestQueryString (simpleQueryToQuery [("genrename", "alternative")])
+                $ request'
+        response <- httpLBS request
         
+        putStrLn $ show request
+        putStrLn $ show response
+
+    testFunc2 :: IO()
+    testFunc2 = do
+        request' <- parseRequest ("POST http://shoutcast.com/Home/BrowseByGenre")
+        let request
+                = --setRequestMethod "POST"
+                -- $ setRequestPath "/Home/BrowseByGenre"
+                -- $ setRequestHeader "HOST" ["www.shoutcast.com"]
+                 setRequestHeader "Accept" ["*/*"]
+                $ setRequestHeader "Expect" ["100-continue"] -- Expect: 100-continue
+                $ setRequestHeader "Content-Type" ["multipart/form-data"]                
+                $ setRequestBodyLBS "genrename=alternative"
+                $ request'
+
+        httpSink request $ \response -> do
+                liftIO $ putStrLn
+                    $ "The status code was :" ++ show(getResponseStatusCode response)
+                CL.mapM_ (S.hPut stdout)
+
+
+
+    testFunc3 :: IO ()
+    testFunc3 = httpSink "http://httpbin.org/get" $ \response -> do
+        liftIO $ putStrLn
+            $ "The status code was: "
+            ++ show (getResponseStatusCode response)
+
+        CL.mapM_ (S.hPut stdout)
