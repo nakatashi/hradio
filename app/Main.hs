@@ -1,5 +1,6 @@
+{-# LANGUAGE DeriveGeneric, DeriveAnyClass, OverloadedStrings #-}
 module Main where
-    import RadioClient
+    import BrowseStations
 
     main :: IO()
-    main = testFunc
+    main = browseByGenre "rock"
