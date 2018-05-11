@@ -2,7 +2,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module BrowseStations (
-    browseByGenre
+    browseByGenre,
+    browseByGenre'
     ) where
     
     import Control.Applicative
@@ -22,14 +23,14 @@ module BrowseStations (
     import Constants
 
     -- This will be replaced by cartesian product data type.
-    type Genre = String
+    type Genre = S.ByteString
 
     data StationInfo = StationInfo {
         statID :: Int,
         statName :: String,
         statFormat :: String,
         statBitrate :: Int,
-        statGenre :: Genre,
+        statGenre :: String,
         statCurrentTrack:: String,
         statListeners :: Int,
         statIsRadionomy :: Bool,
@@ -57,18 +58,26 @@ module BrowseStations (
                 $  setRequestHeader "Content-Type" ["multipart/form-data"]
                 $ req
 --    browseByGenre :: Genre -> IO [StationInfo]
-    browseByGenre :: S.ByteString -> IO ()
+    browseByGenre :: Genre -> IO (Either JSONException [StationInfo])
     browseByGenre genre = do
-        req' <- parseRequest ("POST http://shoutcast.com/Home/BrowseByGenre")
+        req' <- parseRequest ("POST "++shoutCastURL ++ browseGenreTail)
         --response <- httpLBS (request req')
         response <- httpJSONEither (request req')
         case (getResponseBody response :: Either JSONException [StationInfo] ) of
-            Left err -> putStrLn (show err)
-            Right b -> putStrLn (show b)
-
+            Left err -> return (Left err)
+            Right b -> return (Right b)
         where request r = setRequestMethod "POST"
                     $ setRequestHeader "Accept" ["*/*"]
                     $ setRequestHeader "Expect" ["100-continue"]
-                    $ setRequestHeader "Content-Type" ["multipart/form-data"]                
+                    $ setRequestHeader "Content-Type" ["multipart/form-data"]
                     $ setRequestQueryString (simpleQueryToQuery [("genrename", genre)])
                     $ r
+
+
+    browseByGenre' :: S.ByteString -> IO ()
+    browseByGenre' genre = do
+      res <- browseByGenre genre
+      case res of
+        Left err -> putStrLn $ show err
+        Right j -> putStrLn $ show j
+  
