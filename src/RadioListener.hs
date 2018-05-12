@@ -2,12 +2,12 @@
 {-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
 {-# LANGUAGE TemplateHaskell #-}
 
- module RadioListener (
-   getCurrentTrack',
-   getStreamUrl,
-   openConnection,
-   openConnectionTestURL
-   ) where
+module RadioListener (
+  getCurrentTrack',
+  getStreamUrl,
+  openConnection,
+  openConnectionTestURL
+  ) where
 
 import Control.Applicative
 import Control.Monad.IO.Class (liftIO)
