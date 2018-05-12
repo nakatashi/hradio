@@ -1,6 +1,8 @@
 {-# LANGUAGE DeriveGeneric, DeriveAnyClass, OverloadedStrings #-}
 module Main where
-    import BrowseStations
+import BrowseStations
+import RadioListener
 
-    main :: IO()
-    main = browseByGenre' "alternative"
+main :: IO()
+main = getCurrentTrack' 1472708
+

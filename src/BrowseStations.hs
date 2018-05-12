@@ -21,29 +21,7 @@ module BrowseStations (
     import Text.ParserCombinators.Parsec
 
     import Constants
-
-    -- This will be replaced by cartesian product data type.
-    type Genre = S.ByteString
-
-    data StationInfo = StationInfo {
-        statID :: Int,
-        statName :: String,
-        statFormat :: String,
-        statBitrate :: Int,
-        statGenre :: String,
-        statCurrentTrack:: String,
-        statListeners :: Int,
-        statIsRadionomy :: Bool,
-        statIceUrl :: String,
-        statStreamUrl :: Maybe String, -- sometimes null like example above
-        statAACEnabled :: Int,
-        statIsPlaying :: Bool,
-        statIsAACEnabled :: Bool
-    } deriving (Show, Generic)
-    
-    $(deriveJSON defaultOptions {
-        fieldLabelModifier = drop 4
-        } ''StationInfo)
+    import Types
 
     -- not case-sensitive
     sampleGenre :: Genre
@@ -57,7 +35,7 @@ module BrowseStations (
     myRequest req = setRequestBodyLBS ("genrename=alternative")
                 $  setRequestHeader "Content-Type" ["multipart/form-data"]
                 $ req
---    browseByGenre :: Genre -> IO [StationInfo]
+
     browseByGenre :: Genre -> IO (Either JSONException [StationInfo])
     browseByGenre genre = do
         req' <- parseRequest ("POST "++shoutCastURL ++ browseGenreTail)
@@ -72,7 +50,6 @@ module BrowseStations (
                     $ setRequestHeader "Content-Type" ["multipart/form-data"]
                     $ setRequestQueryString (simpleQueryToQuery [("genrename", genre)])
                     $ r
-
 
     browseByGenre' :: S.ByteString -> IO ()
     browseByGenre' genre = do
